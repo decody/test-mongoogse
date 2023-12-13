@@ -1,16 +1,9 @@
 const express = require('express')
 const app = express()
 const { userRouter } = require('./routes/userRouter')
+const { blogRouter } = require('./routes/blogRouter')
+const { PORT, MONGO_URI } = require('./config')
 const mongoose = require('mongoose')
-const dotenv = require('dotenv')
-
-dotenv.config({ debug: true, override: true })
-
-const PORT = process.env.PORT || 3000
-const DB_USER = process.env.DB_USER
-const DB_PASSWORD = process.env.DB_PASSWORD
-
-const MONGO_URI = `mongodb+srv://${DB_USER}:${DB_PASSWORD}@cluster0.px94k2q.mongodb.net/nodejsBlog?retryWrites=true&w=majority`
 
 const server = async () => {
   try {
@@ -23,6 +16,7 @@ const server = async () => {
     app.use(express.json())
 
     app.use('/user', userRouter)
+    app.use('/blog', blogRouter)
 
     app.listen(PORT, () => {
       console.log(`listening on port ${PORT}`)
