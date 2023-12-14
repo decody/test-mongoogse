@@ -1,6 +1,9 @@
 const { Router } = require('express')
 const userRouter = Router()
+const { httpResponseCode } = require('../config')
 const { User } = require('../models/User')
+
+const { OK, BAD_REQUEST, NOT_FOUND, INTERNAL_ERROR } = httpResponseCode
 
 userRouter.get('/', async (req, res) => {
   try {
@@ -8,7 +11,7 @@ userRouter.get('/', async (req, res) => {
     return res.send({ users })
   } catch (err) {
     console.log(err)
-    return res.status(500).send({ err: err.message })
+    return res.status(INTERNAL_ERROR).send({ err: err.message })
   }
 })
 
@@ -17,13 +20,13 @@ userRouter.get('/:userId', async (req, res) => {
     const { userId } = req.params
     // mongoose에서 objectId인지 아닌지 판단
     if (!mongoose.isValidObjectId(userId)) {
-      return res.status(400).send({ err: 'Invalid userId' })
+      return res.status(BAD_REQUEST).send({ err: 'Invalid userId' })
     }
     const user = await User.findOne({ _id: userId })
     return res.send({ user })
   } catch (err) {
     console.log(err)
-    return res.status(500).send({ err: err.message })
+    return res.status(INTERNAL_ERROR).send({ err: err.message })
   }
 })
 
@@ -32,10 +35,11 @@ userRouter.post('/', async (req, res) => {
     // const { name, age } = req.body
     // users.push({ name, age })
     let { username, name } = req.body
-    if (!username) return res.status(400).send({ err: 'username is required' })
+    if (!username)
+      return res.status(BAD_REQUEST).send({ err: 'username is required' })
     if (!name || !name.firstName || !name.lastName) {
       return res
-        .status(400)
+        .status(BAD_REQUEST)
         .send({ err: 'Both first name and last name are required' })
     }
     const user = new User(req.body)
@@ -43,7 +47,7 @@ userRouter.post('/', async (req, res) => {
     return res.send({ user })
   } catch (err) {
     console.log(err)
-    return res.status(500).send({ err: err.message })
+    return res.status(INTERNAL_ERROR).send({ err: err.message })
   }
 })
 
@@ -51,13 +55,13 @@ userRouter.delete('/:userId', async (req, res) => {
   try {
     const { userId } = req.params
     if (!mongoose.isValidObjectId(userId)) {
-      return res.status(400).send({ err: 'Invalid userId' })
+      return res.status(BAD_REQUEST).send({ err: 'Invalid userId' })
     }
     const user = await User.findOneAndDelete({ _id: userId })
     return res.send({ user })
   } catch (err) {
     console.log(err)
-    return res.status(500).send({ err: err.message })
+    return res.status(INTERNAL_ERROR).send({ err: err.message })
   }
 })
 
@@ -65,14 +69,14 @@ userRouter.put('/:userId', async (req, res) => {
   try {
     const { userId } = req.params
     if (!mongoose.isValidObjectId(userId)) {
-      return res.status(400).send({ err: 'Invalid userId' })
+      return res.status(BAD_REQUEST).send({ err: 'Invalid userId' })
     }
     const { age, name } = req.body
     if (!age && !name) {
-      return res.status(400).send({ err: 'age or name is required' })
+      return res.status(BAD_REQUEST).send({ err: 'age or name is required' })
     }
     if (age && typeof age !== 'number') {
-      return res.status(400).send({ err: 'age must be a number' })
+      return res.status(BAD_REQUEST).send({ err: 'age must be a number' })
     }
     if (
       name &&
@@ -80,7 +84,7 @@ userRouter.put('/:userId', async (req, res) => {
       typeof name.lastName !== 'string'
     ) {
       return res
-        .status(400)
+        .status(BAD_REQUEST)
         .send({ err: 'first name and last name are strings' })
     }
     // let updateBody = {}
@@ -99,7 +103,7 @@ userRouter.put('/:userId', async (req, res) => {
     return res.send({ user })
   } catch (err) {
     console.log(err)
-    return res.status(500).send({ err: err.message })
+    return res.status(INTERNAL_ERROR).send({ err: err.message })
   }
 })
 
