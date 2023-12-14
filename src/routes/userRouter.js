@@ -1,7 +1,7 @@
 const { Router } = require('express')
 const userRouter = Router()
 const { httpResponseCode } = require('../config')
-const { User } = require('../models/User')
+const { User } = require('../models')
 
 const { OK, BAD_REQUEST, NOT_FOUND, INTERNAL_ERROR } = httpResponseCode
 
